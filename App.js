@@ -1,40 +1,54 @@
-import React from 'react';
-import { StyleSheet, Text, View, TextInput } from 'react-native';
+import React, { Component } from 'react';
+import { Alert, Button, StyleSheet, View } from 'react-native';
 
-class Blink extends React.Component {
-}
-
-export default class BlinkApp extends React.Component {
-  constructor(props){ // Componentのマウント前に一度だけ呼ばれる
-    super(props); // ES6の記法ではコンストラクタで明示する必要あり
-    this.state = {text:''};
+export default class ButtonBasics extends Component {
+  _onPressButton() { // React備え付けの関数と区別するためにアンダースコア(_)から始まる名前で関数を定義
+    Alert.alert('You tapped the button!')
   }
-  render(){
-    return(
+
+  render() {
+    return (
       <View style={styles.container}>
-        { /* Viewのstyleに渡すのはキーバーリュー形式のオブジェクトである必要がある、よって{{}}の形式をとる */ }
-        <TextInput
-          style = {{height:40}}
-          placeholder="Type here to translate!"
-          onChangeText={(text) => this.setState({text})} // なぜsetState(text)でなく、setState({text})なのか？
-          // onChangeTextは、フィールドに入力されたテキストが変更される度に、引数にとる関数を実行する
-        />
-        <Text style={{ padding:10, fontSize: 40}}>
-          {this.state.text.split(' ').map((word) => word && 'aaaaaa').join(' ')}
-          { /*
-          splitの返値は、stringオブジェクトを引数で区切った配列
-          mapの返値は、配列を一つずつ取り出して、引数に取った処理を施した、新たな配列
-          ∩を表す&&を使うことで、wordがtrueならば、配列の各要素を'aaaaaa'に置換する処理を行う
-          joinの返値は、配列を引数にとったstringオブジェクトで接着したstringオブジェクト
-          */ }
-        </Text>
+        <View style={styles.buttonContainer}>
+          <Button
+            onPress={this._onPressButton}
+            title="Press Me"
+          />
+        </View>
+        <View style={styles.buttonContainer}>
+          <Button
+            onPress={this._onPressButton}
+            title="Press Me"
+            color="#841584"
+          />
+        </View>
+        <View style={styles.alternativeLayoutButtonContainer}>
+          <Button
+            onPress={this._onPressButton}
+            title="This looks great!"
+          />
+          <Button
+            onPress={this._onPressButton}
+            title="OK!"
+            color="#841584"
+          />
+        </View>
       </View>
     );
   }
 }
-const styles = StyleSheet.create({ // constは定数、及び、Functionalコンポーネントの定義に用いることができる
-  // var, const, let いずれにせよオブジェクトを作成するための関数
+
+const styles = StyleSheet.create({
   container: {
-    padding: 10
+   flex: 1,
+   justifyContent: 'center',
   },
-});
+  buttonContainer: {
+    margin: 20
+  },
+  alternativeLayoutButtonContainer: {
+    margin: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  }
+})
