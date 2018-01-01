@@ -4,6 +4,9 @@ import {
   Text,
   View,
   FlatList,
+  Image,
+  Dimensions,
+  AsyncStorage,
   Button
 } from 'react-native';
 
@@ -29,15 +32,38 @@ export default class App extends Component {
     }
     _fetch(this);
   }
+  save(data) {
+    AsyncStorage.setItem(data['title'], JSON.stringify(data), (err) => {
+      if(err){
+        console.log(err);
+        return false;
+      }else{
+        console.log(data);
+        return true;
+      }
+    })
+  }
   render() {
     console.log(this.state.threads.length);
+    const{ width, height, scale } = Dimensions.get('window'); // Dimensionsは、デバイスの画面幅を取得するためのAPI
     return (
       <View style={styles.container}>
         <FlatList
           data={this.state.threads}
           extraData={this.state.threads}
           renderItem={(thread) => // アロー関数っぽく見えるが、ロケットの右側に{}を書いてしまうと表示できない
-            <Text>{thread.item.data.title}</Text>
+            <View style={{flex:1, flexDirection:'row',width:"100%",borderBottomWidth:2,borderColor:"#f5f5f5"}}>
+              <Image style={{ width:50, height:50}}
+                source={{uri: thread.item.data.thumbnail}} />
+              <View style={{width:width - 50}}>
+                <View style={{flex:1,flexDirection:'column'}}>
+                  <Text style={{width: width - 50}}>{thread.item.data.title}</Text>
+                  <Text style={{color:"#ababab", fontSize:10}}>{thread.item.data.domain}</Text>
+                  <Button onPress={() => {this.save(thread.item.data)}} title="ストック" />
+                </View>
+              </View>
+              { /* width: width - 50で、取得した横幅から画像の幅である50pxを引くことでテキストが画面内に収まるように */ }
+            </View>
           }
         />
       </View>
