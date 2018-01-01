@@ -69,7 +69,6 @@ export default class App extends Component {
       <View style={styles.container}>
         <Button onPress={this.getMoviesFromApiAsync} title="tap me!" />
         <Button onPress={this._console} title="tap me!" />
-        { /* Reactではbindしないとイベントハンドラ使えないらしいが、ReactNativeでは使用できた */}
       </View>
     );
   }
