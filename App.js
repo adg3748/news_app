@@ -13,6 +13,8 @@ export default class App extends Component {
   constructor(props){
     super(props);
     this.state = { movies: [] };
+    this.getMoviesFromApiAsync = this.getMoviesFromApiAsync.bind(this); // イベントハンドラの設定をする場合、bindしないとthisの内容が変わってしまい、setStateがundefiedだとエラーが出る
+     this._console = this._console.bind(this);
     }
   getMoviesFromApiAsync() { // 文頭にfunctionがついてないのは、関数ではなくイベントハンドラの定義であるため
     return fetch('https://facebook.github.io/react-native/movies.json')
@@ -31,7 +33,7 @@ export default class App extends Component {
       */
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log(responseJson.movies);
+        this.setState({movies :responseJson.movies});
         /*
           [exp] Array [
           [exp]   Object {
@@ -61,11 +63,12 @@ export default class App extends Component {
         console.error(error);
       });
   }
+  _console() { console.log(this.state.movies); }
   render() {
     return (
       <View style={styles.container}>
         <Button onPress={this.getMoviesFromApiAsync} title="tap me!" />
-        { /* Reactではbindしないとイベントハンドラ使えないらしいが、ReactNativeでは使用できた */}
+        <Button onPress={this._console} title="tap me!" />
       </View>
     );
   }
