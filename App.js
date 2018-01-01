@@ -14,7 +14,7 @@ export default class App extends Component {
     super(props);
     this.state = { movies: [] };
     }
-  getMoviesFromApiAsync() {
+  getMoviesFromApiAsync() { // 文頭にfunctionがついてないのは、関数ではなくイベントハンドラの定義であるため
     return fetch('https://facebook.github.io/react-native/movies.json')
       /*
         {
@@ -65,6 +65,7 @@ export default class App extends Component {
     return (
       <View style={styles.container}>
         <Button onPress={this.getMoviesFromApiAsync} title="tap me!" />
+        { /* Reactではbindしないとイベントハンドラ使えないらしいが、ReactNativeでは使用できた */}
       </View>
     );
   }
