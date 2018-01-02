@@ -14,39 +14,49 @@ import {
 } from 'react-native';
 
 class Archive extends Component {
+  static navigationOptions = {
+    title: 'ストックした記事',
+    headerTintColor: 'white',
+    headerBackTitleStyle: {color: 'white'},
+    headerStyle: {backgroundColor: "#00aced"}
+  }
   constructor(props){
     super(props);
-    this.state = { data: '' };
+    this.state = { threads: '' };
   }
-  getData(){
-    AsyncStorage.getAllkeys((err,keys) => {
+  componentDidMount(){
+    this.getData(this);
+  }
+  getData(_this){
+    AsyncStorage.getAllKeys((err,keys) =>{
       if(err){
         console.error(err);
         return false;
       }else{
-        AsyncStorage.multiGet(keys, (err,data) => {
-          this.setState({data: data});
+        AsyncStorage.multiGet(keys, (err,threads) => {
+          threads = threads.map((thread) => { return JSON.parse(thread[1])});
+          _this.setState({threads: threads});
           return true;
-        })
+        });
       }
-    })
+    });
   }
   render() {
     const{ width, height, scale } = Dimensions.get('window'); // Dimensionsは、デバイスの画面幅を取得するためのAPI
     return (
       <View style={{flex:1}}>
         <FlatList
-          data={this.state.data}
-          extraData={this.state.data}
+          data={this.state.threads}
+          extraData={this.state.threads}
+          keyExtractor={(item, index) => item.id} // この一文がないとWarningが出る
           renderItem={(thread) => // アロー関数っぽく見えるが、ロケットの右側に{}を書いてしまうと表示できない
             <View style={{flex:1, flexDirection:'row',width:"100%",borderBottomWidth:2,borderColor:"#f5f5f5"}}>
               <Image style={{ width:50, height:50}}
-                source={{uri: thread.item.data.thumbnail}} />
+                source={{uri: thread.item.thumbnail}} />
               <View style={{width:width - 50}}>
                 <View style={{flex:1,flexDirection:'column'}}>
-                  <Text style={{width: width - 50}}>{thread.item.data.title}</Text>
-                  <Text style={{color:"#ababab", fontSize:10}}>{thread.item.data.domain}</Text>
-                  <Button onPress={() => {this.save(thread.item.data)}} title="ストック" />
+                  <Text style={{width: width - 50}}>{thread.item.title}</Text>
+                  <Text style={{color:"#ababab", fontSize:10}}>{thread.item.domain}</Text>
                 </View>
               </View>
               { /* width: width - 50で、取得した横幅から画像の幅である50pxを引くことでテキストが画面内に収まるように */ }
@@ -84,7 +94,6 @@ class Main extends Component {
           let threads = responseJson.data.children; // 配列の中にオブジェクトがたくさん
           threads = threads.map( i => {
             i.key = i.data.url // keyがないと警告が出る
-            console.log(i.data.url);
             return i
           });
           _this.setState({threads: threads});
@@ -100,13 +109,11 @@ class Main extends Component {
         console.log(err);
         return false;
       }else{
-        console.log(data);
         return true;
       }
     })
   }
   render() {
-    console.log(this.state.threads.length);
     const{ width, height, scale } = Dimensions.get('window'); // Dimensionsは、デバイスの画面幅を取得するためのAPI
     return (
       <View style={styles.container}>
