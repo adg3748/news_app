@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { StackNavigator } from 'react-navigation';
 import {
   StyleSheet,
   Text,
@@ -7,10 +8,58 @@ import {
   Image,
   Dimensions,
   AsyncStorage,
-  Button
+  Button,
+  StatusBar
 } from 'react-native';
 
-export default class App extends Component {
+class Archive extends Component {
+
+  constructor(props){
+    super(props);
+    this.state = { data: '' };
+  }
+  getData(){
+    AsyncStorage.getAllkeys((err,keys) => {
+      if(err){
+        console.error(err);
+        return false;
+      }else{
+        AsyncStorage.multiGet(keys, (err,data) => {
+          this.setState({data: data});
+          return true;
+        })
+      }
+    })
+  }
+  render() {
+    const{ width, height, scale } = Dimensions.get('window'); // Dimensionsは、デバイスの画面幅を取得するためのAPI
+    return (
+      <View style={{flex:1}}>
+        <FlatList
+          data={this.state.data}
+          extraData={this.state.data}
+          renderItem={(thread) => // アロー関数っぽく見えるが、ロケットの右側に{}を書いてしまうと表示できない
+            <View style={{flex:1, flexDirection:'row',width:"100%",borderBottomWidth:2,borderColor:"#f5f5f5"}}>
+              <Image style={{ width:50, height:50}}
+                source={{uri: thread.item.data.thumbnail}} />
+              <View style={{width:width - 50}}>
+                <View style={{flex:1,flexDirection:'column'}}>
+                  <Text style={{width: width - 50}}>{thread.item.data.title}</Text>
+                  <Text style={{color:"#ababab", fontSize:10}}>{thread.item.data.domain}</Text>
+                  <Button onPress={() => {this.save(thread.item.data)}} title="ストック" />
+                </View>
+              </View>
+              { /* width: width - 50で、取得した横幅から画像の幅である50pxを引くことでテキストが画面内に収まるように */ }
+            </View>
+          }
+        />
+      </View>
+    );
+  }
+}
+
+
+class Main extends Component {
 
   constructor(props){
     super(props);
@@ -71,9 +120,30 @@ export default class App extends Component {
   }
 }
 
+export default class App extends Component {
+  // 画面を管理するだけの機能に限定
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    return (
+      <View style={{flex:1}}>
+        <StatusBar barStyle="dark-content"/>
+        { /* 画面上部の時間など表示するバーを装飾する */ }
+        <AppNavigation/>
+        { /* 画面上部に50pxほどの高さのナビバーを表示し、Mainのrenderも行う*/ }
+      </View>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   container: {
   },
 })
 
+const AppNavigation = StackNavigator({
+  Main: { screen: Main },
+  Archive: { screen: Archive }
+})
 
