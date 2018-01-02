@@ -9,11 +9,11 @@ import {
   Dimensions,
   AsyncStorage,
   Button,
-  StatusBar
+  StatusBar,
+  TouchableOpacity
 } from 'react-native';
 
 class Archive extends Component {
-
   constructor(props){
     super(props);
     this.state = { data: '' };
@@ -60,7 +60,20 @@ class Archive extends Component {
 
 
 class Main extends Component {
-
+  static navigationOptions = ({navigation}) => ({
+    title: '新着記事',
+    headerTintColor: 'white',
+    headerBackTitleStyle: { color: 'white' },
+    headerStyle: { backgroundColor: "#00aced" },
+    headerRight:
+      <TouchableOpacity
+        style={{paddingRight:8}}
+        onPress={() => {navigation.navigate('Archive')}}>
+        <Image
+          source={require('./assets/menu.png')}
+          style={{height:25, width:25}}/>
+      </TouchableOpacity>
+  })
   constructor(props){
     super(props);
     this.state = { threads: '' };
@@ -128,7 +141,7 @@ export default class App extends Component {
   render() {
     return (
       <View style={{flex:1}}>
-        <StatusBar barStyle="dark-content"/>
+        <StatusBar barStyle="light-content"/>
         { /* 画面上部の時間など表示するバーを装飾する */ }
         <AppNavigation/>
         { /* 画面上部に50pxほどの高さのナビバーを表示し、Mainのrenderも行う*/ }
